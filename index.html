@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stinky's Airspace License Creator</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background: #0f0f0f; color: #d682ff; text-align: center; padding: 20px; }
+        .container { background: #1a1a1a; padding: 25px; border-radius: 15px; display: inline-block; border: 2px solid #ff00ff; box-shadow: 0 0 15px #a333ff; }
+        .input-group { margin: 10px 0; text-align: left; }
+        label { display: block; font-size: 12px; margin-bottom: 5px; color: #aaa; }
+        input { width: 300px; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; }
+        button { background: #ff00ff; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px; text-transform: uppercase; }
+        button:hover { background: #cc00cc; }
+        canvas { margin-top: 25px; border-radius: 5px; box-shadow: 0 0 30px rgba(163, 51, 255, 0.5); max-width: 95%; height: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 style="color: white; margin-top: 0;">LICENSE GENERATOR</h2>
+        
+        <div class="input-group">
+            <label>MOD USERNAME</label>
+            <input type="text" id="username" placeholder="e.g. STINKY_FAN_01">
+        </div>
+        <div class="input-group">
+            <label>SERVER NAME</label>
+            <input type="text" id="server" placeholder="e.g. MAIN AIRSPACE">
+        </div>
+        <div class="input-group">
+            <label>LICENSE NO</label>
+            <input type="text" id="licNo" placeholder="e.g. 882-001">
+        </div>
+        <div class="input-group">
+            <label>DATE ISSUED / EXPIRES</label>
+            <input type="text" id="dates" placeholder="01/04/26 | NEVER">
+        </div>
+        <div class="input-group">
+            <label>UPLOAD PFP</label>
+            <input type="file" id="pfpInput" accept="image/*">
+        </div>
+
+        <button onclick="drawLicense()">Create License</button>
+        <button onclick="downloadLicense()" style="background: #444;">Download PNG</button>
+    </div>
+
+    <br>
+    <canvas id="licenseCanvas" width="1000" height="667"></canvas>
+
+    <script>
+        const canvas = document.getElementById('licenseCanvas');
+        const ctx = canvas.getContext('2d');
+        const imgTemplate = new Image();
+        imgTemplate.src = 'image_1767541450029.jpeg';
+
+        function drawLicense() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(imgTemplate, 0, 0, canvas.width, canvas.height);
+
+            // Font Settings
+            ctx.fillStyle = "#1a1a1a"; // Dark text to contrast the white boxes
+            ctx.font = "bold 28px sans-serif";
+
+            // 1. Username (Inside the long white box)
+            ctx.fillText(document.getElementById('username').value.toUpperCase(), 385, 322);
+
+            // 2. Server (Inside the middle white box)
+            ctx.fillText(document.getElementById('server').value.toUpperCase(), 385, 478);
+
+            // 3. License No
+            ctx.fillText(document.getElementById('licNo').value.toUpperCase(), 385, 715);
+
+            // 4. Dates (Bottom boxes)
+            ctx.font = "bold 22px sans-serif";
+            ctx.fillText(document.getElementById('dates').value, 40, 815);
+
+            // 5. Profile Picture (Inside the large PFP square)
+            const pfpFile = document.getElementById('pfpInput').files[0];
+            if (pfpFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const pfpImg = new Image();
+                    pfpImg.onload = function() {
+                        // Drawing PFP exactly over the "PFP" placeholder
+                        ctx.drawImage(pfpImg, 42, 248, 296, 458); 
+                    }
+                    pfpImg.src = e.target.result;
+                }
+                reader.readAsDataURL(pfpFile);
+            }
+        }
+
+        function downloadLicense() {
+            const link = document.createElement('a');
+            link.download = 'Stinkys_Mod_License.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        // Run once on load to show template
+        imgTemplate.onload = () => ctx.drawImage(imgTemplate, 0, 0, canvas.width, canvas.height);
+    </script>
+</body>
+</html>
